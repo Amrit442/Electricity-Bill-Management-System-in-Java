@@ -1,0 +1,70 @@
+package prjct;
+import java.sql.*;
+import java.util.Scanner;
+public class Electricity {
+	 
+	 
+		public static void main(String args[]) throws Exception{
+			double bill=0;
+			double sum=0;
+			
+		try{  
+		Class.forName("com.mysql.cj.jdbc.Driver");  
+		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?user=root&password=amrit");
+		PreparedStatement psmt=con.prepareStatement("insert into elect values(?,?,?,?,?)");
+		System.out.println("*------*------*------*------*------*");
+		System.out.println("ELECTRICITY BILL MANAGEMENT SYSYTEM");
+		System.out.println("*------*------*------*------*------*");
+		Scanner sc=new Scanner(System.in);
+		System.out.println("Enter CustomerId");
+		int id=sc.nextInt();
+		System.out.println("Enter Name of the Customer");
+		String name=sc.next();
+		System.out.println("Enter Mobile Number of Customer");
+		int mob=sc.nextInt();
+		System.out.println("Enter Unit");
+		int unit=sc.nextInt();
+		
+		if(unit<=100) {
+			bill=unit*1.20;
+		}
+		else if(unit<300)
+		 {
+		   bill=100*1.20+(unit-100)*2;
+		 }
+		else if(unit>300)
+		{
+		    bill=100*1.20+200*2+(unit-300)*3;
+		}
+		
+		psmt.setInt(1,id);
+		psmt.setString(2,name);
+		psmt.setInt(3,mob);
+		psmt.setInt(4,unit);
+		psmt.setDouble(5,bill);
+		
+		psmt.executeUpdate(); 
+		Statement stmt=con.createStatement();
+		ResultSet rs=stmt.executeQuery("select * from elect");  
+		//System.out.println("cus_id"+"  "+"name"+"  "+"mob"+"  "+"unit"+"  "+"bill");
+		while(rs.next()) {
+			System.out.println("-------------------------------------------------------------");
+			System.out.println("cus_id="+rs.getInt(1)+"  "+"name="+rs.getString(2)+"  "+"mob="+rs.getInt(3)+"  "+"unit="+rs.getInt(4)+"  "+"bill="+rs.getDouble(5));
+			
+		}
+		System.out.println("-------------------------------------------------------------");
+		
+		Statement stm=con.createStatement();
+		ResultSet res = stm.executeQuery("SELECT SUM(bill) FROM elect");
+	    while (res.next()) {
+	      double c = res.getInt(1);
+	      sum = sum + c;
+	    }
+	    System.out.println("Total bill of all customers in electricity department= " + sum);
+	    System.out.println("-----------------------------------------------------------------");
+		con.close();  
+		}catch(Exception e){ System.out.println(e);} 
+		
+		}  
+		 
+	}
